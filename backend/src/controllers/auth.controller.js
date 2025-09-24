@@ -6,7 +6,7 @@ import cloudinary from "../lib/cloudinary.js";
 // @desc    Register new user
 // @route   POST /api/auth/signup 
 // @access  Public
-export const signup = async (req, res) => {
+export const signup = async (req, res) => { 
   try {
     const { username, email, password, fullName, role, organization, bio, state } = req.body;
 
