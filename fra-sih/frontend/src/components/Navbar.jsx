@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import SignupForm from "./signup";
+import SignupForm from "./Signup";
 import LoginForm from "./Login";
 import { useAuthStore } from "../store/useAuthStore";
 
