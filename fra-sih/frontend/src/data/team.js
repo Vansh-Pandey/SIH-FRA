@@ -22,10 +22,10 @@ const people = [
   },
   {
     id: 4,
-    name: "Loveleen",
+    name: "Anushka",
     designation: "Student",
     image:
-      "/team/loveleen.png",
+      "/team/anushka.jpg",
   },
   {
     id: 5,

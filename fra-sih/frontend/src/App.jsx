@@ -1,9 +1,18 @@
-import { useState } from 'react'
+import { useState,useEffect } from 'react'
 import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
 import LandingPage from './pages/LandingPage';
-import Navbar from  './components/Navbar';
+import Navbar from './components/Navbar';
 import { ToastContainer } from "react-toastify";
+import { useAuthStore } from './store/useAuthStore';
+import Home from './pages/Home';
+import Profile from './pages/Profile';
+import DataHub from './pages/DataHub';
+ 
 function App() {
+  const { checkAuth, authUser } = useAuthStore(); // get auth info
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
 
   const navigate = useNavigate();
   return (
@@ -12,8 +21,11 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        {/* <Route path="/home" element={authUser ? <Home /> : <Navigate to="/" />} />
-        <Route path="/learn/kana" element={authUser ? <LearnKana /> : <Navigate to="/" />} />
+        <Route path="/home" element={authUser ? <Home /> : <Navigate to="/" />}
+        />
+        <Route path="/profile" element={authUser ? <Profile /> : <Navigate to="/" />} />
+        <Route path="/dashboard" element={authUser ? <DataHub /> : <Navigate to="/" />} />
+        {/*<Route path="/learn/kana" element={authUser ? <LearnKana /> : <Navigate to="/" />} />
         <Route path="/courses" element={authUser ? <Courses /> : <Navigate to="/" />} />
         <Route path="/games" element={authUser ? <Games /> : <Navigate to="/" />} />
         <Route path="/learn/kanji" element={authUser ? <LearnKanji /> : <Navigate to="/" />} />
@@ -21,7 +33,7 @@ function App() {
         <Route path="/support" element={authUser ? <Support /> : <Navigate to="/" />} />
         <Route path="/practice/kanji" element={authUser ? <PracticeKanji /> : <Navigate to="/" />} /> 
         <Route path="/ai-tutor" element={authUser ? <AiTutor /> : <Navigate to="/" />} />
-        <Route path="/profile" element={authUser ? <Profile /> : <Navigate to="/" />} />
+        
         <Route path="/about" element={<About/>}/>
         <Route path="/contact" element={<Contact/>}/>
         {/* <Route path="/login" element={<Login/>}/>

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import { useEffect, useState } from "react";
 import { BackgroundLines } from "../components/ui/background-lines";
 import { motion } from "motion/react";
 import { TracingBeam } from "../components/ui/tracing-beam";
@@ -10,14 +10,25 @@ import {
 import AnimatedTooltip from "../components/ui/animated-tooltip"
 import people from "../data/team"
 import fraCards from "../data/fra_cards"
-export default function LandingPage() { 
+import LoginForm from "../components/Login";
+import SignupForm from "../components/signup";
+import { useAuthStore } from "../store/useAuthStore";
+import { useNavigate } from "react-router-dom";
+export default function LandingPage() {
+    const [showLogin, setShowLogin] = useState(false);
+    const [isSignup, setIsSignup] = useState(false); 
+    const { checkAuth, authUser } = useAuthStore(); // get auth info
+    const navigate=useNavigate();
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
 
     return (
         <div className="min-h-screen w-full bg-white dark:bg-black overflow-x-hidden">
-            <BackgroundLines className="min-h-screen  flex flex-col items-center justify-start w-full px-4 py-12 md:py-20  relative space-y-12 md:space-y-32">
+            <BackgroundLines className="min-h-screen  flex flex-col items-center justify-start w-full px-4 py-12 md:py-20  relative space-y-12 md:space-y-32 z-0">
 
                 {/* Hero Section */}
-                <div className="flex flex-col items-center justify-center text-center w-full h-screen mx-auto -mt-20">
+                <div className="flex flex-col items-center justify-center text-center w-full h-screen mx-auto -mt-20 z-10">
                     <div className="flex flex-col items-center justify-center text-center w-full h-screen px-4">
                         <motion.h1
                             initial={{ y: 50, opacity: 0 }}
@@ -53,12 +64,14 @@ export default function LandingPage() {
                             <motion.button
                                 whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(59, 130, 246, 0.4)" }}
                                 whileTap={{ scale: 0.95 }}
-                                className="px-8 py-4 rounded-2xl bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 
-                                text-white font-semibold text-lg shadow-2xl hover:shadow-blue-500/50 
-                                transition-all duration-300 border border-blue-400/20"
+                                className="px-8 py-4 rounded-2xl bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600  text-white font-semibold text-lg shadow-2xl hover:shadow-blue-500/50 transition-all duration-300 border border-blue-400/20"
+
+
+                                onClick={ !authUser ? () => setShowLogin(true) : () => navigate("/home")}
                             >
                                 Explore Atlas
                             </motion.button>
+
                             <motion.button
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
@@ -71,6 +84,33 @@ export default function LandingPage() {
                         </motion.div>
                     </div>
                 </div>
+                {(showLogin || isSignup) && (
+                    <div className="fixed inset-0 flex justify-center items-center bg-black/50 z-[9999]">
+                        <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl p-6 relative w-[90%] max-w-md">
+                            {showLogin && (
+                                <LoginForm
+                                    onClose={() => setShowLogin(false)}
+                                    switchToSignup={() => {
+                                        setShowLogin(false);
+                                        setIsSignup(true);
+                                    }}
+                                />
+                            )}
+                            {isSignup && (
+                                <SignupForm
+                                    onClose={() => setIsSignup(false)}
+                                    switchToLogin={() => {
+                                        setIsSignup(false);
+                                        setShowLogin(true);
+                                    }}
+                                />
+                            )}
+                        </div>
+                    </div>
+                )}
+
+
+
 
                 {/* Interactive Cards Section */}
                 <div className="w-full max-w-7xl mx-auto relative">
