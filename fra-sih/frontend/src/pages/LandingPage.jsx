@@ -11,7 +11,7 @@ import AnimatedTooltip from "../components/ui/animated-tooltip"
 import people from "../data/team"
 import fraCards from "../data/fra_cards"
 import LoginForm from "../components/Login";
-import SignupForm from "../components/signup";
+import SignupForm from "../components/Signup";
 import { useAuthStore } from "../store/useAuthStore";
 import { useNavigate } from "react-router-dom";
 export default function LandingPage() {

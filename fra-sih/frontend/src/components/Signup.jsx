@@ -183,7 +183,7 @@ export default function SignupForm({ onClose, switchToLogin }) {
                shadow-lg hover:shadow-green-500/40 transition-all duration-300 
                disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {isSigning ? "Creating account..." : "Sign Up"}
+            {isRegistering ? "Creating account..." : "Sign Up"}
           </motion.button>
         </form>
 
