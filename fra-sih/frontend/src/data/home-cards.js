@@ -21,7 +21,7 @@ const cards = [
     title: "Track & Verify Claims",
     src: "/track-verify.png",
     ctaText: "Manage",
-    ctaLink: "/claims",
+    ctaLink: "/dss",
     content: () =>
       React.createElement(
         "p",
@@ -36,7 +36,7 @@ const cards = [
     title: "Interactive Map System",
     src: "/fra-map.png",
     ctaText: "Explore",
-    ctaLink: "/maps",
+    ctaLink: "/atlas",
     content: () =>
       React.createElement(
         "p",

@@ -57,9 +57,9 @@ const Navbar = () => {
           <ul className="hidden md:flex gap-6 text-gray-700 dark:text-gray-300 font-medium">
             <li onClick={() => navigate("/home")} className="hover:text-blue-500 cursor-pointer transition">Home</li>
             <li onClick={() => navigate("/dashboard")} className="hover:text-blue-500 cursor-pointer transition">DataHub</li>
-            <li onClick={() => navigate("/maps")} className="hover:text-blue-500 cursor-pointer transition">ATLAS Mapping</li>
+            <li onClick={() => navigate("/atlas")} className="hover:text-blue-500 cursor-pointer transition">ATLAS Mapping</li>
             {/* <li className="hover:text-blue-500 cursor-pointer transition">AI Mapping</li> */}
-            <li onClick={() => navigate("/claims")} className="hover:text-blue-500 cursor-pointer transition">DSS</li>
+            <li onClick={() => navigate("/dss")} className="hover:text-blue-500 cursor-pointer transition">DSS</li>
             <li onClick={() => navigate("/about")} className="hover:text-blue-500 cursor-pointer transition">About us</li>
           </ul>
 
@@ -127,11 +127,11 @@ const Navbar = () => {
             </button>
             <ul className="flex flex-col gap-2 p-4">
               <li onClick={() => navigate("/home")} className="hover:text-blue-500 cursor-pointer transition">Home</li>
-              <li className="hover:text-blue-500 cursor-pointer transition">DataHub</li>
-              <li className="hover:text-blue-500 cursor-pointer transition">ATLAS Map</li>
+              <li onClick={() => navigate("/dashboard")}className="hover:text-blue-500 cursor-pointer transition">DataHub</li>
+              <li onClick={() => navigate("/atlas")}className="hover:text-blue-500 cursor-pointer transition">ATLAS Map</li>
               {/* <li className="hover:text-blue-500 cursor-pointer transition">AI Mapping</li> */}
-              <li className="hover:text-blue-500 cursor-pointer transition">DSS</li>
-              <li className="hover:text-blue-500 cursor-pointer transition">About us</li>
+              <li onClick={() => navigate("/dss")}className="hover:text-blue-500 cursor-pointer transition">DSS</li>
+              <li onClick={() => navigate("/about")} className="hover:text-blue-500 cursor-pointer transition">About us</li>
               {!authUser ? (
                 <>
                   <li><button onClick={openLogin} className="w-full text-left">Login</button></li>
