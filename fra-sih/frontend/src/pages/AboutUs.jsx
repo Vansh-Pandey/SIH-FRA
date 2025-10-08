@@ -232,10 +232,10 @@ const AboutUs = () => {
         >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { label: "Team Members", value: "6+", icon: "👥" },
-              { label: "Families Helped", value: "1000+", icon: "🏡" },
-              { label: "Projects Completed", value: "50+", icon: "✅" },
-              { label: "Years Experience", value: "15+", icon: "⭐" }
+              { label: "Team Members", value: "6", icon: "👥" },
+              { label: "Projects made", value: "10+", icon: "🏡" },
+              { label: "Hackathons Participated", value: "50+", icon: "✅" },
+              { label: "Experience", value: "2+", icon: "⭐" }
             ].map((stat, i) => (
               <motion.div
                 key={i}
