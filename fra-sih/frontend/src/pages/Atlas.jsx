@@ -1,25 +1,49 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { MapContainer, TileLayer, Polygon, Popup, useMap } from "react-leaflet";
 import { cn } from "../lib/utils";
 import Boxes from "../components/ui/background-boxes";
+import "leaflet/dist/leaflet.css";
+
+// Fix for default marker icons in React-Leaflet
+import L from "leaflet";
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+});
+
+// Component to handle map zoom/pan
+function MapController({ selectedRegion }) {
+  const map = useMap();
+  
+  useEffect(() => {
+    if (selectedRegion) {
+      map.flyTo(selectedRegion.data.coordinates, 14, { duration: 1 });
+    }
+  }, [selectedRegion, map]);
+  
+  return null;
+}
 
 const Atlas = () => {
   const [selectedRegion, setSelectedRegion] = useState(null);
-  const [hoveredRegion, setHoveredRegion] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [mapScale, setMapScale] = useState(1);
-  const [mapPosition, setMapPosition] = useState({ x: 0, y: 0 });
-  const mapRef = useRef(null);
-  const isDragging = useRef(false);
-  const dragStart = useRef({ x: 0, y: 0 });
 
-  // Mock data for regions
+  // Real coordinates for Himachal Pradesh regions with polygon boundaries
   const regions = {
     mandi: {
       id: "mandi",
       name: "Mandi District",
-      path: "M 150 100 L 250 80 L 280 150 L 250 200 L 180 220 L 130 180 Z",
       color: "#3b82f6",
+      coordinates: [
+        [31.7144, 76.9536],
+        [31.7244, 76.9736],
+        [31.7044, 76.9836],
+        [31.6944, 76.9636],
+        [31.7044, 76.9436]
+      ],
       data: {
         landOwner: "Rajesh Kumar",
         size: "15.5 acres",
@@ -47,8 +71,14 @@ const Atlas = () => {
     kullu: {
       id: "kullu",
       name: "Kullu Valley",
-      path: "M 280 150 L 380 140 L 400 200 L 370 260 L 290 240 L 250 200 Z",
       color: "#10b981",
+      coordinates: [
+        [31.9680, 77.0999],
+        [31.9780, 77.1199],
+        [31.9580, 77.1299],
+        [31.9480, 77.1099],
+        [31.9580, 77.0899]
+      ],
       data: {
         landOwner: "Priya Sharma",
         size: "22.3 acres",
@@ -76,8 +106,14 @@ const Atlas = () => {
     shimla: {
       id: "shimla",
       name: "Shimla Rural",
-      path: "M 130 180 L 180 220 L 200 290 L 140 310 L 80 270 L 90 210 Z",
       color: "#f59e0b",
+      coordinates: [
+        [31.1148, 77.1634],
+        [31.1248, 77.1834],
+        [31.1048, 77.1934],
+        [31.0948, 77.1734],
+        [31.1048, 77.1534]
+      ],
       data: {
         landOwner: "Amit Singh",
         size: "8.7 acres",
@@ -105,8 +141,14 @@ const Atlas = () => {
     solan: {
       id: "solan",
       name: "Solan District",
-      path: "M 250 200 L 290 240 L 280 310 L 200 290 L 180 220 Z",
       color: "#8b5cf6",
+      coordinates: [
+        [30.9145, 77.0867],
+        [30.9245, 77.1067],
+        [30.9045, 77.1167],
+        [30.8945, 77.0967],
+        [30.9045, 77.0767]
+      ],
       data: {
         landOwner: "Neha Verma",
         size: "12.1 acres",
@@ -134,8 +176,14 @@ const Atlas = () => {
     chamba: {
       id: "chamba",
       name: "Chamba Region",
-      path: "M 80 270 L 140 310 L 120 380 L 50 360 L 40 300 Z",
       color: "#ec4899",
+      coordinates: [
+        [32.5656, 76.1161],
+        [32.5756, 76.1361],
+        [32.5556, 76.1461],
+        [32.5456, 76.1261],
+        [32.5556, 76.1061]
+      ],
       data: {
         landOwner: "Vikram Thakur",
         size: "18.9 acres",
@@ -162,44 +210,14 @@ const Atlas = () => {
     }
   };
 
-  const handleMouseDown = (e) => {
-    if (e.target.tagName === 'path') return;
-    isDragging.current = true;
-    dragStart.current = {
-      x: e.clientX - mapPosition.x,
-      y: e.clientY - mapPosition.y
-    };
-  };
-
-  const handleMouseMove = (e) => {
-    if (!isDragging.current) return;
-    setMapPosition({
-      x: e.clientX - dragStart.current.x,
-      y: e.clientY - dragStart.current.y
-    });
-  };
-
-  const handleMouseUp = () => {
-    isDragging.current = false;
-  };
-
-  useEffect(() => {
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, []);
-
-  const handleZoomIn = () => setMapScale(Math.min(mapScale + 0.2, 2));
-  const handleZoomOut = () => setMapScale(Math.max(mapScale - 0.2, 0.6));
-
   const filteredRegions = Object.values(regions).filter(region =>
     region.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     region.data.landOwner.toLowerCase().includes(searchQuery.toLowerCase()) ||
     region.data.village.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Center of Himachal Pradesh
+  const mapCenter = [31.1048, 77.1734];
 
   return (
     <div className="relative w-full min-h-screen bg-slate-900 flex flex-col items-center pt-20 pb-12 overflow-y-auto">
@@ -247,126 +265,62 @@ const Atlas = () => {
           className="flex-1 bg-black/40 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl overflow-hidden"
           style={{ height: '600px' }}
         >
-          {/* Controls */}
-          <div className="absolute top-4 right-4 z-30 flex flex-col gap-2">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={handleZoomIn}
-              className="w-10 h-10 bg-white/10 backdrop-blur-xl border border-white/20 rounded-lg flex items-center justify-center text-white hover:bg-white/20 transition"
-            >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={handleZoomOut}
-              className="w-10 h-10 bg-white/10 backdrop-blur-xl border border-white/20 rounded-lg flex items-center justify-center text-white hover:bg-white/20 transition"
-            >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-              </svg>
-            </motion.button>
-          </div>
-
-          {/* Map SVG */}
-          <div
-            ref={mapRef}
-            onMouseDown={handleMouseDown}
-            className="w-full h-full flex items-center justify-center cursor-move relative"
-            style={{ transform: `translate(${mapPosition.x}px, ${mapPosition.y}px) scale(${mapScale})` }}
+          <MapContainer
+            center={mapCenter}
+            zoom={9}
+            style={{ height: '100%', width: '100%', borderRadius: '24px' }}
+            zoomControl={true}
           >
-            <svg
-              viewBox="0 0 500 500"
-              className="w-full h-full"
-              style={{ maxWidth: '500px', maxHeight: '500px' }}
-            >
-              {/* Background */}
-              <rect width="500" height="500" fill="rgba(15, 23, 42, 0.5)" />
-              
-              {/* Grid Lines */}
-              {[...Array(10)].map((_, i) => (
-                <g key={i}>
-                  <line
-                    x1={i * 50}
-                    y1="0"
-                    x2={i * 50}
-                    y2="500"
-                    stroke="rgba(255,255,255,0.05)"
-                    strokeWidth="1"
-                  />
-                  <line
-                    x1="0"
-                    y1={i * 50}
-                    x2="500"
-                    y2={i * 50}
-                    stroke="rgba(255,255,255,0.05)"
-                    strokeWidth="1"
-                  />
-                </g>
-              ))}
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            
+            <MapController selectedRegion={selectedRegion} />
 
-              {/* Regions */}
-              {Object.values(regions).map((region) => (
-                <motion.path
-                  key={region.id}
-                  d={region.path}
-                  fill={hoveredRegion === region.id ? region.color : `${region.color}80`}
-                  stroke={selectedRegion?.id === region.id ? "#ffffff" : region.color}
-                  strokeWidth={selectedRegion?.id === region.id ? "3" : "2"}
-                  className="cursor-pointer transition-all duration-300"
-                  onMouseEnter={() => setHoveredRegion(region.id)}
-                  onMouseLeave={() => setHoveredRegion(null)}
-                  onClick={() => setSelectedRegion(region)}
-                  whileHover={{ scale: 1.02 }}
-                  style={{
-                    filter: `drop-shadow(0 0 ${hoveredRegion === region.id ? '15px' : '5px'} ${region.color})`
-                  }}
-                />
-              ))}
-
-              {/* Region Labels */}
-              {Object.values(regions).map((region) => {
-                const pathElement = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                pathElement.setAttribute('d', region.path);
-                const bbox = pathElement.getBBox?.() || { x: 200, y: 150, width: 0, height: 0 };
-                
-                return (
-                  <text
-                    key={`label-${region.id}`}
-                    x={bbox.x + bbox.width / 2}
-                    y={bbox.y + bbox.height / 2}
-                    fill="white"
-                    fontSize="12"
-                    fontWeight="bold"
-                    textAnchor="middle"
-                    className="pointer-events-none select-none"
-                    style={{ textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}
-                  >
-                    {region.name.split(' ')[0]}
-                  </text>
-                );
-              })}
-            </svg>
-
-            {/* Hover Tooltip */}
-            <AnimatePresence>
-              {hoveredRegion && !selectedRegion && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                  className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur-xl border border-white/20 rounded-xl px-4 py-2 pointer-events-none"
-                >
-                  <p className="text-white font-medium text-sm">
-                    Click to view {regions[hoveredRegion].name} details
-                  </p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+            {/* Render land parcels */}
+            {Object.values(regions).map((region) => (
+              <Polygon
+                key={region.id}
+                positions={region.coordinates}
+                pathOptions={{
+                  color: region.color,
+                  fillColor: region.color,
+                  fillOpacity: 0.5,
+                  weight: selectedRegion?.id === region.id ? 4 : 2
+                }}
+                eventHandlers={{
+                  click: () => setSelectedRegion(region),
+                  mouseover: (e) => {
+                    e.target.setStyle({
+                      fillOpacity: 0.7,
+                      weight: 4
+                    });
+                  },
+                  mouseout: (e) => {
+                    e.target.setStyle({
+                      fillOpacity: 0.5,
+                      weight: selectedRegion?.id === region.id ? 4 : 2
+                    });
+                  }
+                }}
+              >
+                <Popup>
+                  <div className="text-sm">
+                    <strong>{region.name}</strong><br />
+                    Owner: {region.data.landOwner}<br />
+                    Size: {region.data.size}<br />
+                    <button
+                      onClick={() => setSelectedRegion(region)}
+                      className="mt-2 px-3 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600"
+                    >
+                      View Details
+                    </button>
+                  </div>
+                </Popup>
+              </Polygon>
+            ))}
+          </MapContainer>
         </motion.div>
 
         {/* Info Panel */}
