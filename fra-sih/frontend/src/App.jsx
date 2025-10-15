@@ -25,12 +25,12 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/about" element={<AboutUs />} />
-        <Route path="/home" element={authUser ? <Home /> : <Navigate to="/" />}
+        <Route path="/home" element={<Home />   }
         />
-        <Route path="/profile" element={authUser ? <Profile /> : <Navigate to="/" />} />
-        <Route path="/dashboard" element={authUser ? <DataHub /> : <Navigate to="/" />} />
-        <Route path="/atlas" element={authUser ? <Atlas /> : <Navigate to="/" />} />
-        <Route path="/dss" element={authUser ? <DSS /> : <Navigate to="/" />} />
+        <Route path="/profile" element={<Profile /> } />
+        <Route path="/dashboard" element={<DataHub /> } />
+        <Route path="/atlas" element={<Atlas /> } />
+        <Route path="/dss" element={<DSS /> } />
          
       </Routes>
     </div>

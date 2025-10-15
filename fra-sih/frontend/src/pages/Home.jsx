@@ -106,7 +106,7 @@ const Home = () => {
                                         layoutId={`button-${active.title}-${id}`}
                                         onClick={() => navigate(active.ctaLink)}
                                         target="_blank"
-                                        className="px-4 py-3 text-sm rounded-full font-bold bg-green-500 text-white">
+                                        className="px-4 py-3 text-sm rounded-full font-bold bg-green-500 text-white cursor-pointer">
                                         {active.ctaText}
                                     </motion.a>
                                 </div>
@@ -164,7 +164,7 @@ const Home = () => {
                                 <motion.button
                                     layoutId={`button-${card.title}-${id}`}
                                     className="mt-4 px-4 py-2 text-sm rounded-full font-bold 
-              bg-green-500 text-white hover:bg-green-600"
+              bg-green-500 text-white hover:bg-green-600 cursor-pointer"
                                 >
                                     {card.ctaText}
                                 </motion.button>
